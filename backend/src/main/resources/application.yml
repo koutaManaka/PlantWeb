@@ -1,0 +1,29 @@
+spring:
+  # 数据库连接池的配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/plant?useSSL=false
+    username: root
+    password: root
+  #Redis
+  redis:
+    host: localhost
+    port: 6379
+  # 邮箱配置
+  mail:
+    protocol: smtps
+    host: smtp.163.com  # 发送邮件的服务器地址
+    username: plantsystemcode@163.com # 开启 IMAP/SMTP服务 的qq邮箱的账号
+    password: AJGVYXGWICLGACAI  # 开启 IMAP/SMTP服务 获得的授权码
+    port: 587
+    default-encoding: UTF-8
+# MyBatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.itheima.health.pojo
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+server:
+  port: 9090
+
