@@ -14,9 +14,12 @@ public interface UserDao {
     @Insert("insert into user (username,password,email) values (#{username},#{password},#{email});")
     void register(User registerUser);
 
-    @Select("select  * from user where email = #{email};")
+    @Select("select * from user where email = #{email};")
     User findByEmail(String email);
 
-    @Update("update user set password = #{password} where username = ")
+    @Update("update user set password = #{password} where username = #{username}")
     void change(User user);
+
+    @Select("select * from user where id = #{id};")
+    User findById(String id);
 }

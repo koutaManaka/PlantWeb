@@ -12,10 +12,10 @@
     })
 
     const rules = reactive({
-        code: [
-            {required: true, message: "请输入验证码", trigger: "blur"},
-            {min: 4, max: 4, message: '长度在 4 个字符', trigger: 'blur'},
-        ],
+        // code: [
+        //     {required: true, message: "请输入验证码", trigger: "blur"},
+        //     {min: 4, max: 4, message: '长度在 4 个字符', trigger: 'blur'},
+        // ],
         password: [
             {required: true, message: "请输入密码", trigger: "blur"},
             {min: 6, message: '密码长度要大于6', trigger: 'blur'},

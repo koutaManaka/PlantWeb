@@ -13,5 +13,7 @@ public interface UserService {
 
     Result change(User user);
 
+    User findById(String id);
+
     User findByEmail(String email);
 }

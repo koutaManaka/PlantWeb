@@ -1,5 +1,6 @@
 package com.plant.controller;
 
+
 import com.plant.constant.CodeMessage;
 import com.plant.entity.Result;
 import com.plant.pojo.User;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -27,21 +31,36 @@ public class UserController {
     private RedisTemplate redisTemplate;
 
     @RequestMapping("/login.do")
-    public Result login(@RequestBody User loginUser) {
+    public Result login(@RequestBody User loginUser) throws Exception {
         if (StringUtils.isBlank(loginUser.getUsername()) || StringUtils.isBlank(loginUser.getPassword())) {
             return new Result(false, CodeMessage.CODE_401,"密码和用户名不可为空");
         }
-        Result result = userService.login(loginUser);
-        return result;
+        String initialPassword = decrypt(loginUser.getPassword(),"&M&BVNk4clMIViE9",loginUser.getIv());
+        loginUser.setPassword(initialPassword);
+        return userService.login(loginUser);
     }
+
+    public static String decrypt(String encryptedPassword, String secretKey, String iv) throws Exception {
+        byte[] encryptedBytes = Base64.getDecoder().decode(encryptedPassword);
+        byte[] keyBytes = secretKey.getBytes("UTF-8");
+        byte[] ivBytes = Base64.getDecoder().decode(iv);
+
+        SecretKeySpec keySpec = new SecretKeySpec(keyBytes, "AES");
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+
+        cipher.init(Cipher.DECRYPT_MODE, keySpec, new IvParameterSpec(ivBytes));
+        byte[] decryptedBytes = cipher.doFinal(encryptedBytes);
+
+        return new String(decryptedBytes, "UTF-8");
+    }
+
 
     @RequestMapping("/register.do")
     public Result register(@RequestBody User registerUser) {
         if (StringUtils.isBlank(registerUser.getUsername()) || StringUtils.isBlank(registerUser.getPassword())) {
             return new Result(false, CodeMessage.CODE_401,"密码和用户名不可为空");
         }
-        Result result = userService.register(registerUser);
-        return result;
+        return userService.register(registerUser);
     }
 
     @RequestMapping("/sendMsg.do")
@@ -71,21 +90,25 @@ public class UserController {
         String email = map.get("email");
         String code = map.get("code");
         String passWord = map.get("password");
-        String authCode = (String)redisTemplate.opsForValue().get("email");
+        String authCode = (String)redisTemplate.opsForValue().get(email);
         User dbUser = userService.findByEmail(email);
+        if(code == null) {
+            return new Result(false,CodeMessage.CODE_400,"验证码为空");
+        }
         if(dbUser == null) {
             return new Result(false,CodeMessage.CODE_400,"该邮箱未注册账号");
         } else {
             if(authCode == null) {
-                return new Result(false,CodeMessage.CODE_400,"验证码为空");
+                return new Result(false,CodeMessage.CODE_400,"验证码已过期");
             }
 
             if(!authCode.equals(code)) {
                 return new Result(false,CodeMessage.CODE_400,"验证码错误");
             }
-
+            dbUser.setPassword(passWord);
             return userService.change(dbUser);
         }
     }
+
 
 }

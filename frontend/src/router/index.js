@@ -29,33 +29,30 @@ const routes = [
 ]
 
 const router = createRouter({
-  //history: createWebHashHistory(),
   history: createWebHistory(),
   routes
 })
 
 
-// router.beforeEach((to,from,next) => {
-//   if(to.path === '/register' || to.path === '/login'){ //若是进入登录与注册页面 ==> pass
-//     next()
-//     return ;
-//   }else{
-//     let LoginForm = localStorage.getItem("LoginForm")?JSON.parse(localStorage.getItem("LoginForm")):null;
-//     if(LoginForm==null) {
-//       alert("No account or password was entered");
-//       next('/');
-//       return ;
-//     }
-//     let userToken = LoginForm.token;
-//     if(userToken == null || userToken == ' '){
-//       alert("No account or password was entered");
-//       next('/');
-//       return ;
-//     }else{
-//       next();
-//     }
-//   }
-// })
+router.beforeEach((to,from,next) => {
+  if(to.path === '/register' || to.path === '/login' || to.path === '/forget'){ //若是进入登录与注册页面 ==> pass
+    next()
+  }else{
+    let user = localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):null;
+    if(user === null) {
+      alert("No account or password was entered");
+      next('/');
+      return ;
+    }
+    let userToken = user.token;
+    if(userToken === null || userToken === ' '){
+      alert("No account or password was entered");
+      next('/');
+    }else{
+      next();
+    }
+  }
+})
 
 export default router
 

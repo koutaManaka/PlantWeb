@@ -1,116 +1,109 @@
 <script setup>
-    import {computed, onMounted, ref} from 'vue';
+    import {computed, ref, watchEffect} from 'vue';
     import {ElMessage} from 'element-plus';
     import {useRouter} from 'vue-router';
     import requestOneNet from "@/utils/requestOneNet";
 
     const router = useRouter();
     const data = ref(1);
-    const option = computed(() => {
+    const humidity = ref(1);
+    const water = ref(1);
+    let waterValue = parseFloat(water.value)
+    let ans = waterValue*0.167+1.167
+    if(waterValue < 0.8) {
+        ans = 0
+    }
+    ans = ans.toFixed(2)
+    const optionW = computed(()=>{
         return {
+            tooltip: {
+                formatter: '{a} <br/>{b} : {c}%',
+            },
             series: [
                 {
+                    name: 'WaterLine',
                     type: 'gauge',
-                    center: ['50%', '60%'],
-                    startAngle: 200,
-                    endAngle: -20,
+                    max: 5,
                     min: 0,
-                    max: 60,
-                    splitNumber: 12,
-                    itemStyle: {
-                        color: '#FFAB91'
-                    },
                     progress: {
-                        show: true,
-                        width: 30
-                    },
-                    pointer: {
-                        show: false
-                    },
-                    axisLine: {
-                        lineStyle: {
-                            width: 30
-                        }
-                    },
-                    axisTick: {
-                        distance: -45,
-                        splitNumber: 5,
-                        lineStyle: {
-                            width: 2,
-                            color: '#999'
-                        }
-                    },
-                    splitLine: {
-                        distance: -52,
-                        length: 14,
-                        lineStyle: {
-                            width: 3,
-                            color: '#999'
-                        }
-                    },
-                    axisLabel: {
-                        distance: -20,
-                        color: '#999',
-                        fontSize: 20
-                    },
-                    anchor: {
-                        show: false
-                    },
-                    title: {
-                        show: false
+                        show: true
                     },
                     detail: {
                         valueAnimation: true,
-                        width: '60%',
-                        lineHeight: 40,
-                        borderRadius: 8,
-                        offsetCenter: [0, '-15%'],
-                        fontSize: 40,
-                        fontWeight: 'bolder',
-                        formatter: '{value} °C',
-                        color: 'inherit'
+                        formatter: '{value}',
+                        textStyle: {
+                            fontSize: 16 // 调整字体大小为16px
+                        }
                     },
                     data: [
                         {
-                            value: data.value
+                            value: ans,
+                            name: '水位cm',
+                            fontSize: 9
                         }
                     ]
-                },
+                }
+            ]
+        }
+    })
+    const optionH = computed(()=>{
+        return {
+            tooltip: {
+                formatter: '{a} <br/>{b} : {c}%',
+            },
+            series: [
                 {
+                    name: 'Humidity',
                     type: 'gauge',
-                    center: ['50%', '60%'],
-                    startAngle: 200,
-                    endAngle: -20,
+                    max: 80,
                     min: 0,
-                    max: 60,
-                    itemStyle: {
-                        color: '#FD7347'
-                    },
                     progress: {
-                        show: true,
-                        width: 8
-                    },
-                    pointer: {
-                        show: false
-                    },
-                    axisLine: {
-                        show: false
-                    },
-                    axisTick: {
-                        show: false
-                    },
-                    splitLine: {
-                        show: false
-                    },
-                    axisLabel: {
-                        show: false
+                        show: true
                     },
                     detail: {
-                        show: false
+                        valueAnimation: true,
+                        formatter: '{value}',
+                        textStyle: {
+                            fontSize: 16 // 调整字体大小为16px
+                        }
                     },
                     data: [
                         {
-                            value: data.value
+                            value: humidity.value,
+                            name: '湿度%',
+                            fontSize: 9
+                        }
+                    ]
+                }
+            ]
+        }
+    })
+    const option = computed(() => {
+        return {
+            tooltip: {
+                formatter: '{a} <br/>{b} : {c}%',
+            },
+            series: [
+                {
+                    name: 'Temperature',
+                    type: 'gauge',
+                    max: 65,
+                    min: 0,
+                    progress: {
+                        show: true
+                    },
+                    detail: {
+                        valueAnimation: true,
+                        formatter: '{value}',
+                        textStyle: {
+                            fontSize: 16 // 调整字体大小为16px
+                        }
+                    },
+                    data: [
+                        {
+                            value: data.value,
+                            name: '温度℃',
+                            fontSize: 9
                         }
                     ]
                 }
@@ -118,7 +111,7 @@
         }
     })
 
-    async function GetData() {
+    watchEffect(async () => {
         try {
             const res = await requestOneNet.get("/devices/datapoints?devIds=1040544350", {
                 headers: {
@@ -128,15 +121,12 @@
             });
             let str = res.data.data.devices[0].datastreams[0].value;
             str = str.split(':');
+            humidity.value = str[0];
             data.value = str[1];
+            water.value = str[2];
         } catch (err) {
             console.log(err);
         }
-    }
-
-    onMounted(() => {
-        GetData();
-        setInterval(GetData, 50000);
     });
 
     function Exit() {
@@ -243,11 +233,14 @@
             <el-main>
                 <el-row type="flex" class="first">
                     <el-col :span="7" class="box">
-                        <div>温度</div>
                         <e-charts class="chart" :option="option"></e-charts>
                     </el-col>
-                    <el-col :span="7" class="box"></el-col>
-                    <el-col :span="7" class="box" style="margin-right: 15px"></el-col>
+                    <el-col :span="7" class="box">
+                        <e-charts class="chart" :option="optionH"></e-charts>
+                    </el-col>
+                    <el-col :span="7" class="box" style="margin-right: 15px">
+                        <e-charts class="chart" :option="optionW"></e-charts>
+                    </el-col>
                 </el-row>
             </el-main>
         </el-container>

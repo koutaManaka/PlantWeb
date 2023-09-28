@@ -3,8 +3,10 @@ package com.plant.service.impl;
 import com.plant.constant.CodeMessage;
 import com.plant.dao.UserDao;
 import com.plant.entity.Result;
+import com.plant.entity.UserDTO;
 import com.plant.pojo.User;
 import com.plant.service.UserService;
+import com.plant.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,7 +31,9 @@ public class UserServiceImpl implements UserService {
         if (!matches) {
             return new Result(false, CodeMessage.CODE_400, "登录失败，密码错误");
         }
-        return new Result(true, CodeMessage.CODE_200, "登录成功","User");
+        String token = TokenUtils.generateToken(String.valueOf(queryUser.getId()),queryUser.getPassword());
+        UserDTO userDTO = new UserDTO(queryUser.getUsername(), queryUser.getId(), token);
+        return new Result(true, CodeMessage.CODE_200, "登录成功",userDTO);
     }
 
     @Override
@@ -70,8 +74,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Result change(User user) {
+        //Encrypted Passwords
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String encoderPassword = encoder.encode(user.getPassword());
+        user.setPassword(encoderPassword);
+
         userDao.change(user);
-       return new Result(true,CodeMessage.CODE_500,"修改成功");
+        return new Result(true, CodeMessage.CODE_200, "修改成功");
+    }
+
+    @Override
+    public User findById(String id) {
+        return userDao.findById(id);
     }
 
     @Override

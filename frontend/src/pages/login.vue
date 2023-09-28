@@ -1,13 +1,36 @@
-<script setup >
+<script setup>
     import {onMounted, reactive, ref} from 'vue'
-    import { ElMessage } from 'element-plus';
-    import { useRouter } from 'vue-router';
+    import {ElMessage} from 'element-plus';
+    import {useRouter} from 'vue-router';
     import request from "../utils/request.js";
+    import CryptoJS from 'crypto-js';
+
+    const encryptedPassword = (password, secretKey) => {
+        const key = CryptoJS.enc.Utf8.parse(secretKey);
+        const iv = CryptoJS.lib.WordArray.random(16);
+
+        const encrypted = CryptoJS.AES.encrypt(
+            password,
+            key,
+            {
+                iv: iv,
+                mode: CryptoJS.mode.CBC,
+                padding: CryptoJS.pad.Pkcs7,
+            }
+        );
+
+        return {
+            password: encrypted.toString(),
+            iv: iv.toString(CryptoJS.enc.Base64),
+        };
+    }
+
 
     const loginForm = reactive({
         username: '',
         password: '',
     })
+
 
     const rules = reactive({
         username: [
@@ -20,6 +43,7 @@
         ],
     })
 
+    const secretKey = "&M&BVNk4clMIViE9";
 
     const FormRef = ref();
 
@@ -36,9 +60,16 @@
     const login = () => {
         FormRef.value.validate((valid) => {
             if (valid) {
-                request.post("/user/login.do", loginForm).then(res => {
+                const encryptedData = encryptedPassword(loginForm.password, secretKey);
+                const encryptedLoginForm = {
+                    ...loginForm,
+                    password: encryptedData.password,
+                    iv: encryptedData.iv,
+                };
+
+                request.post("/user/login.do", encryptedLoginForm).then(res => {
                     if (res.code === '200') {
-                        localStorage.setItem("loginForm", JSON.stringify(res.data));
+                        localStorage.setItem("user", JSON.stringify(res.data));
                         router.push("/home");
                         ElMessage.success("Login Successfully");
                     } else {

@@ -12,4 +12,5 @@ public class User {
     private String address; // 地址
     private String telephone; // 联系电话
     private String email; //邮箱
+    private String iv; // 生成的随机码
 }

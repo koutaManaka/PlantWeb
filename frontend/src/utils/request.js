@@ -8,11 +8,11 @@ const request = axios.create({
 // request 拦截器
 // 可以自请求发送前对请求做一些处理
 // 比如统一加token，对请求参数统一加密
-let LoginForm = localStorage.getItem("LoginForm")?JSON.parse(localStorage.getItem("LoginForm")):null;
+let user = localStorage.getItem("user")?JSON.parse(localStorage.getItem("user")):null;
 request.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/json;charset=utf-8';
-    if(LoginForm) {
-        config.headers['token'] = LoginForm.token;  // 设置请求头
+    if(user) {
+        config.headers['token'] = user.token; // 设置请求头
     }
     return config
 }, error => {
