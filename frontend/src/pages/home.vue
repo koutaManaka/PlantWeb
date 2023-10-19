@@ -1,15 +1,19 @@
 <script setup>
-    import {computed, ref, watchEffect} from 'vue';
+    import {computed, onBeforeUnmount, onMounted, onUnmounted, ref, watchEffect} from 'vue';
     import {ElMessage} from 'element-plus';
     import {useRouter} from 'vue-router';
     import requestOneNet from "@/utils/requestOneNet";
 
-    const router = useRouter();
-    const data = ref(1);
-    const humidity = ref(1);
-    const water = ref(1);
+    const router = useRouter()
+    const data = ref(1)
+    const humidity = ref(1)
+    const water = ref(1)
     let waterValue = parseFloat(water.value)
     let ans = waterValue*0.167+1.167
+    let interval = null
+    const userData = localStorage.getItem("user")
+    const user = ref({})
+    user.value = JSON.parse(userData)
     if(waterValue < 0.8) {
         ans = 0
     }
@@ -55,7 +59,7 @@
                 {
                     name: 'Humidity',
                     type: 'gauge',
-                    max: 80,
+                    max: 85,
                     min: 0,
                     progress: {
                         show: true
@@ -111,9 +115,9 @@
         }
     })
 
-    watchEffect(async () => {
+    const getData = async () => {
         try {
-            const res = await requestOneNet.get("/devices/datapoints?devIds=1040544350", {
+            const res = await requestOneNet.get("/devices/datapoints?devIds=1040544350&timestamp=" + Date.now(), {
                 headers: {
                     'Content-Type': 'application/json',
                     'api-key': 'GoVrky0s0q0911dhkH57NWue0oE='
@@ -127,7 +131,7 @@
         } catch (err) {
             console.log(err);
         }
-    });
+    }
 
     function Exit() {
         router.push("/login")
@@ -135,6 +139,21 @@
         localStorage.clear();
         ElMessage.success('Exit Successfully');
     }
+
+    const setTimer = () => {
+        interval = setInterval(getData,20000)
+    }
+
+    onMounted(()=>{
+        getData()
+        setTimer()
+    })
+
+    onBeforeUnmount(() => {
+        clearInterval(interval)
+        interval = null
+    })
+
 </script>
 
 <template>
@@ -227,7 +246,7 @@
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
-                    <!--                    <span>{{ LoginForm.username }}</span>-->
+                    <span>{{user.username}}</span>
                 </div>
             </el-header>
             <el-main>

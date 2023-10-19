@@ -25,6 +25,11 @@ const routes = [
     path: '/forget',
     name: 'forget',
     component: () =>import("../pages/forget.vue")
+  },
+  {
+    path: '/personal',
+    name: 'personal',
+    component: () =>import("../pages/personal.vue")
   }
 ]
 
