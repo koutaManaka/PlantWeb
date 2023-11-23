@@ -134,6 +134,13 @@
             <artifactId>spring-security-core</artifactId>
             <version>5.7.6</version>
         </dependency>
+
+<!--        &lt;!&ndash;权限管理&ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
+
     </dependencies>
 
 </project>

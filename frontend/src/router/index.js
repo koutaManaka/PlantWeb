@@ -17,19 +17,19 @@ const routes = [
     component: () => import('../pages/register.vue')
   },
   {
-    path: '/home',
-    name: 'home',
-    component: () => import('../pages/home.vue')
-  },
-  {
     path: '/forget',
     name: 'forget',
     component: () =>import("../pages/forget.vue")
   },
   {
-    path: '/personal',
-    name: 'personal',
-    component: () =>import("../pages/personal.vue")
+    path: '/data',
+    name: 'data',
+    component: () =>import("../pages/data.vue")
+  },
+  {
+    path: '/manage',
+    name: 'manage',
+    component: () => import("../pages/manage.vue")
   }
 ]
 

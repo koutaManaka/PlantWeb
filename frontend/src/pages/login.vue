@@ -66,11 +66,10 @@
                     password: encryptedData.password,
                     iv: encryptedData.iv,
                 };
-
                 request.post("/user/login.do", encryptedLoginForm).then(res => {
                     if (res.code === '200') {
                         localStorage.setItem("user", JSON.stringify(res.data));
-                        router.push("/home");
+                        router.push("/data");
                         ElMessage.success("Login Successfully");
                     } else {
                         ElMessage.error(res.message);

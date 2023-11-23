@@ -4,6 +4,7 @@ import com.plant.constant.CodeMessage;
 import com.plant.dao.UserDao;
 import com.plant.entity.Result;
 import com.plant.entity.UserDTO;
+import com.plant.entity.UsersDTO;
 import com.plant.pojo.User;
 import com.plant.service.UserService;
 import com.plant.utils.TokenUtils;
@@ -14,11 +15,18 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserDao userDao;
+
+    @Override
+    public void edit(User editUser) {
+        userDao.edit(editUser);
+    }
 
     @Override
     public Result login(User loginUser) {
@@ -32,7 +40,7 @@ public class UserServiceImpl implements UserService {
             return new Result(false, CodeMessage.CODE_400, "登录失败，密码错误");
         }
         String token = TokenUtils.generateToken(String.valueOf(queryUser.getId()),queryUser.getPassword());
-        UserDTO userDTO = new UserDTO(queryUser.getUsername(), queryUser.getId(), token);
+        UserDTO userDTO = new UserDTO(queryUser.getUsername(), queryUser.getId(), token, queryUser.getDeviceId(), queryUser.getApiKey());
         return new Result(true, CodeMessage.CODE_200, "登录成功",userDTO);
     }
 
@@ -91,6 +99,31 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userDao.findByEmail(email);
+    }
+
+    @Override
+    public List<UsersDTO> selectPage(Integer pageNum, Integer pageSize, String username,String email,String apiKey) {
+        return userDao.selectPage(pageNum,pageSize, username, email, apiKey);
+    }
+
+    @Override
+    public Integer getTotal(String username,String email,String apiKey) {
+        return userDao.getTotal(username, email, apiKey);
+    }
+
+    @Override
+    public void insert(User insertUser) {
+        userDao.insert(insertUser);
+    }
+
+    @Override
+    public void deleteById(Integer id) {
+        userDao.deleteById(id);
+    }
+
+    @Override
+    public void deleteBatch(List<Integer> ids) {
+        userDao.deleteBatch(ids);
     }
 
 }

@@ -3,23 +3,21 @@ package com.plant.controller;
 
 import com.plant.constant.CodeMessage;
 import com.plant.entity.Result;
+import com.plant.entity.UsersDTO;
 import com.plant.pojo.User;
 import com.plant.service.UserService;
 import com.plant.utils.ValidateCodeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-
+import java.util.stream.Collectors;
 
 @RequestMapping("/user")
 @RestController
@@ -54,6 +52,29 @@ public class UserController {
         return new String(decryptedBytes, "UTF-8");
     }
 
+    @RequestMapping("/edit.do")
+    public Result edit(@RequestBody User editUser) {
+        userService.edit(editUser);
+        return new Result(true,CodeMessage.CODE_200,"Update Success");
+    }
+
+    @RequestMapping("/insert.do")
+    public Result insert(@RequestBody User insertUser) {
+        userService.insert(insertUser);
+        return new Result(true,CodeMessage.CODE_200,"Update Success");
+    }
+
+    @RequestMapping("/{id}")
+    public Result delete(@PathVariable Integer id) {
+        userService.deleteById(id);
+        return new Result(true,CodeMessage.CODE_200,"Update Success");
+    }
+
+    @RequestMapping("batch.do")
+    public Result deleteBatch(@RequestBody List<Integer> ids) {
+        userService.deleteBatch(ids);
+        return new Result(true,CodeMessage.CODE_200,"Update Success");
+    }
 
     @RequestMapping("/register.do")
     public Result register(@RequestBody User registerUser) {
@@ -61,6 +82,24 @@ public class UserController {
             return new Result(false, CodeMessage.CODE_401,"密码和用户名不可为空");
         }
         return userService.register(registerUser);
+    }
+
+    @RequestMapping("/page.do")
+    public Result findPage(@RequestParam Integer pageNum,
+                           @RequestParam Integer pageSize,
+                           @RequestParam(defaultValue = "") String username,
+                           @RequestParam(defaultValue = "") String email,
+                           @RequestParam(defaultValue = "") String apiKey) {
+        pageNum = (pageNum-1) * pageSize;
+        username = '%' + username + '%';
+        email = '%' + email + '%';
+        apiKey = '%' + apiKey + '%';
+        Integer total = userService.getTotal(username,email,apiKey);
+        Map<String,Object> res = new HashMap<>();
+        List<UsersDTO> userList = userService.selectPage(pageNum,pageSize,username,email,apiKey);
+        res.put("data",userList);
+        res.put("total",total);
+        return new Result(true,CodeMessage.CODE_200,res);
     }
 
     @RequestMapping("/sendMsg.do")
