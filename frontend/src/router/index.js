@@ -53,7 +53,15 @@ router.beforeEach((to,from,next) => {
     if(userToken === null || userToken === ' '){
       alert("No account or password was entered");
       next('/');
-    }else{
+    }else if(to.path === '/manage') {
+      if(user.role === "管理员") {
+        next();
+      } else {
+        alert("No role to enter");
+        next('/');
+      }
+    }
+    else {
       next();
     }
   }

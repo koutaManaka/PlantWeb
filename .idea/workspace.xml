@@ -29,8 +29,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="JavaScript File" />
-        <option value="Vue Composition API Component" />
         <option value="Class" />
+        <option value="Vue Composition API Component" />
       </list>
     </option>
   </component>
@@ -76,7 +76,7 @@
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/78191/Desktop/chapter12&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/PlantWeb/frontend/public&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -95,6 +95,9 @@
     <option name="notificationShown" value="true" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\PlantWeb\frontend\public" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\PlantWeb\frontend\src\pages" />
       <recent name="C:\PlantWeb\backend\src\main\java\com\plant\config" />
@@ -227,6 +230,9 @@
       <workItem from="1700488195447" duration="197000" />
       <workItem from="1700552464714" duration="14076000" />
       <workItem from="1700657939190" duration="10829000" />
+      <workItem from="1700742293683" duration="6913000" />
+      <workItem from="1700828422669" duration="2271000" />
+      <workItem from="1700891534574" duration="271000" />
     </task>
     <servers />
   </component>
@@ -253,6 +259,20 @@
           <url>jar://$USER_HOME$/.jdks/corretto-1.8.0_382/src.zip!/com/sun/crypto/provider/AESCipher.java</url>
           <line>445</line>
           <option name="timeStamp" value="15" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/backend/src/main/java/com/plant/controller/UserController.java</url>
+          <line>86</line>
+          <option name="timeStamp" value="16" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-method">
+          <url>file://$PROJECT_DIR$/backend/src/main/java/com/plant/controller/UserController.java</url>
+          <line>87</line>
+          <properties class="com.plant.controller.UserController" method="findPage">
+            <option name="EMULATED" value="true" />
+            <option name="WATCH_EXIT" value="false" />
+          </properties>
+          <option name="timeStamp" value="17" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -2,6 +2,11 @@
     import {onMounted, reactive, ref} from "vue";
     import request from "@/utils/request";
     import {ElMessage} from "element-plus";
+    import router from "@/router";
+
+    const userData = localStorage.getItem("user")
+    const user = ref({})
+    user.value = JSON.parse(userData)
     const tableData = ref([])
     const total = ref(0)
     const pageNum = ref(1)
@@ -106,6 +111,12 @@
         })
     }
 
+    const Exit = ()=> {
+        localStorage.clear();
+        router.push("/login");
+    }
+
+
     onMounted(() => {
         getUser();
     });
@@ -148,11 +159,11 @@
                             </el-dropdown-menu>
                         </template>
                     </el-dropdown>
-<!--                    <span>{{user.username}}</span>-->
+                    <span>{{user.username}}</span>
                 </div>
             </el-header>
             <el-main>
-                <el-row style="padding: 10px 0;margin-top: 20px">
+                <el-row style="padding: 10px 0;margin-top: 20px; min-width: 1200px">
                     <el-col span="12" style="margin-left: 20px">
                         <el-input  placeholder="输入用户名" style="width: 200px;margin-right: 10px" v-model="username" >
                             <template #suffix>
@@ -173,7 +184,7 @@
                         <el-button style="margin-left: 10px" type="warning" @click="reset">重置</el-button>
                     </el-col>
                 </el-row>
-                <el-row style="margin-bottom: 10px">
+                <el-row style="margin-bottom: 10px;min-width: 1200px">
                     <el-col span="12" style="margin-left: 10px">
                         <el-button style="margin-left: 10px" type="primary" @click="handleAdd">新增<el-icon style="margin-left: 5px"><circlePlus/></el-icon></el-button>
                         <el-popconfirm
@@ -191,14 +202,14 @@
                         </el-popconfirm>
                     </el-col>
                 </el-row>
-                <el-table :data="tableData" style="width: 98%;margin-left: 20px" border stripe @selection-change="handleSelectionChange">
+                <el-table :data="tableData" style="width: 98%;margin-left: 20px; min-width: 1275px" border stripe @selection-change="handleSelectionChange">
                     <el-table-column type="selection" width="55" />
                     <el-table-column prop="id" label="ID" width="90" />
                     <el-table-column prop="username" label="用户名" width="120" />
                     <el-table-column prop="role" label="权限" width="120" />
                     <el-table-column prop="email" label="邮箱" width="180" />
                     <el-table-column prop="apiKey" label="密钥" width="280" />
-                    <el-table-column prop="deviceId" label="设备ID" />
+                    <el-table-column prop="deviceId" label="设备ID" width="210"/>
                     <el-table-column label="操作">
                         <template #default="scope">
                             <el-button type="success" @click="handleEdit(scope.row)">编辑<el-icon style="margin-left: 5px"><edit/></el-icon></el-button>

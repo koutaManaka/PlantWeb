@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
             return new Result(false, CodeMessage.CODE_400, "登录失败，密码错误");
         }
         String token = TokenUtils.generateToken(String.valueOf(queryUser.getId()),queryUser.getPassword());
-        UserDTO userDTO = new UserDTO(queryUser.getUsername(), queryUser.getId(), token, queryUser.getDeviceId(), queryUser.getApiKey());
+        UserDTO userDTO = new UserDTO(queryUser.getUsername(), queryUser.getId(), token, queryUser.getDeviceId(), queryUser.getApiKey(), queryUser.getRole());
         return new Result(true, CodeMessage.CODE_200, "登录成功",userDTO);
     }
 
